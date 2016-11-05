@@ -1,0 +1,82 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.neenbedankt.android-apt'
+
+android {
+    compileSdkVersion 24
+    buildToolsVersion "25.0.0"
+    defaultConfig {
+        applicationId "com.example.hyc.movieshow"
+        minSdkVersion 16
+        targetSdkVersion 24
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+    buildTypes {
+        debug{
+            buildConfigField("String","Movie_Key",'"3b6c539a1f567a53ac1abb8a07561205"')
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        release {
+            minifyEnabled false
+            buildConfigField("String","Movie_Key",'"3b6c539a1f567a53ac1abb8a07561205"')
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    dataBinding{
+        enabled = true
+    }
+    packagingOptions {
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/rxjava.properties'
+    }
+
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    testCompile 'junit:junit:4.12'
+
+
+    // Espresso UI Testing dependencies.
+    androidTestCompile espressos.core
+    androidTestCompile espressos.contrib
+    androidTestCompile espressos.intents
+    compile espressos.idelingresource
+
+    androidTestCompile supportDependencies.design
+    androidTestCompile supportDependencies.appcompatV7
+
+
+    compile supportDependencies.recyclerview
+    compile supportDependencies.design
+    compile 'com.google.code.gson:gson:2.5'
+    compile "com.squareup.retrofit2:retrofit:${retrofitVersion}"
+    compile rxcomponents.rxjava2Adapter
+    compile "com.squareup.retrofit2:converter-gson:${retrofitVersion}"
+    compile("com.squareup.retrofit2:converter-simplexml:${retrofitVersion}")
+            {
+                exclude module: 'stax'
+                exclude module: 'stax-api'
+                exclude module: 'xpp3'
+            }
+
+
+    compile "io.reactivex.rxjava2:rxjava:${rxandroidVersion}"
+    compile "io.reactivex.rxjava2:rxandroid:${rxjavaVersion}"
+    compile "com.github.bumptech.glide:glide:${glideVersion}"
+
+    compile ok.http
+    compile ok.io
+    compile ok.log
+    compile 'com.tbruyelle.rxpermissions2:rxpermissions:0.8.1@aar'
+    compile supportDependencies.constraint
+}

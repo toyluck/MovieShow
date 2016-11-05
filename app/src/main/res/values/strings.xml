@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MovieShow</string>
+    <string name="title_get_accounts">获取用户权限</string>
+    <string name="message_get_accounts">请允许app获取您的用户信息</string>
+    <string name="explanation_message_get_accounts">就是要权限</string>
+    <string name="item_des">show_pic</string>
+</resources>
