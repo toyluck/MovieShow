@@ -13,6 +13,7 @@ import io.reactivex.Single;
 import io.reactivex.functions.Action;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by hyc on 16-11-5.
@@ -46,21 +47,29 @@ public class MoviesRepository implements MoviesDataSource {
     }
 
     @Override
-    public Flowable<List<MovieModel>> getMovies() {
-        Flowable<List<MovieModel>> remoteMovies = getAndSaveRemoteMovies();
-        if (mCacheIsDirty) {
+    public Flowable<List<MovieModel>> getMovies(int page) {
+
+        Flowable<List<MovieModel>> remoteMovies = getAndSaveRemoteMovies(page);
+        if (!mCacheIsDirty) {
             return remoteMovies;
         } else {
             //
+            return getAndSaveMomeMovies(page);
         }
 
 
-        return null;
     }
 
+    private Flowable<List<MovieModel>> getAndSaveMomeMovies(int page) {
+
+        return mLocalDataSouce.getMovies(page);
+    }
+
+
     //
-    private Flowable<List<MovieModel>> getAndSaveRemoteMovies() {
-        return mRemoteDataSouce.getMovies().flatMap(new Function<List<MovieModel>, Publisher<List<MovieModel>>>() {
+    private Flowable<List<MovieModel>> getAndSaveRemoteMovies(int page) {
+        return mRemoteDataSouce.getMovies(page).flatMap(new Function<List<MovieModel>,
+                Publisher<List<MovieModel>>>() {
             @Override
             public Publisher<List<MovieModel>> apply(List<MovieModel> movieModels) throws Exception {
                 saveMovies(movieModels);
@@ -68,7 +77,7 @@ public class MoviesRepository implements MoviesDataSource {
                         .doOnNext(new Consumer<MovieModel>() {
                             @Override
                             public void accept(MovieModel movieModel) throws Exception {
-                                // save data to local
+                                // save data to local);
 
                             }
                         });
@@ -76,14 +85,19 @@ public class MoviesRepository implements MoviesDataSource {
 
                 return single.toFlowable();
             }
+        }).doOnComplete(new Action() {
+            @Override
+            public void run() throws Exception {
+                mCacheIsDirty = false;
+            }
         });
 
     }
 
     @Override
-    public Flowable<MovieModel> getMovie() {
+    public  MovieModel getMovie() {
 
-        return mLocalDataSouce.getMovie();
+        return mRemoteDataSouce.getMovie()==null?mLocalDataSouce.getMovie():mRemoteDataSouce.getMovie();
     }
 
     @Override

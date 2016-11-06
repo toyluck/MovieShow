@@ -11,11 +11,16 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.hyc.movieshow.R;
 import com.example.hyc.movieshow.databinding.FragMoviesBinding;
 import com.example.hyc.movieshow.datas.MovieModel;
 import com.example.hyc.movieshow.utils.DividerItemDecoration;
@@ -39,6 +44,8 @@ import io.reactivex.SingleSource;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.realm.Realm;
+import io.realm.RealmChangeListener;
 
 /**
  * Created by hyc on 16-11-2.
@@ -73,6 +80,16 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
 
         mMovieAdapter = new MovieAdapter();
         recyclerView.setAdapter(mMovieAdapter);
+        setHasOptionsMenu(true);
+
+        Realm.getDefaultInstance().addChangeListener(new RealmChangeListener<Realm>() {
+            @Override
+            public void onChange(Realm element) {
+                Log.d("Movie","Realm ChangeListener" + Thread.currentThread());
+                System.out.println("element = " + element);
+                mMovieAdapter.notifyDataSetChanged();
+            }
+        });
         return mDataBinding.getRoot();
     }
 
@@ -178,6 +195,23 @@ public class MoviesFragment extends Fragment implements MoviesContract.View {
         mPresenter.unsubscribe();
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.menu_main,menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_main_1:
+                mPresenter.loadTaks(true);
+                break;
+        }
+
+        return super.onOptionsItemSelected(item);
+
+    }
 
     @Override
     public void bindPresenter(MoviesContract.Presenter presenter) {

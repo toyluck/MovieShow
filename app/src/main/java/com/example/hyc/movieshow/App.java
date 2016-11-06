@@ -1,6 +1,7 @@
 package com.example.hyc.movieshow;
 
 import android.app.Application;
+import android.app.TaskStackBuilder;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -10,7 +11,8 @@ import io.realm.RealmConfiguration;
  */
 
 public class App extends Application {
-    private static App mApp;
+    private static App                mApp;
+    private static RealmConfiguration mConfiguration;
 
     public static Application getApp() {
         return mApp;
@@ -25,9 +27,14 @@ public class App extends Application {
 
     private void initRealm() {
         Realm.init(this);
-        RealmConfiguration configuration = new RealmConfiguration.Builder()
+        // 这里删除之前的Migration ,正式发布时需要进行修改
+        mConfiguration = new RealmConfiguration.Builder()
                 // 这里删除之前的Migration ,正式发布时需要进行修改
                 .deleteRealmIfMigrationNeeded().build();
-        Realm.setDefaultConfiguration(configuration);
+        Realm.setDefaultConfiguration(mConfiguration);
+    }
+
+    public static RealmConfiguration getConfiguration() {
+        return mConfiguration;
     }
 }

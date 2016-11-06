@@ -2,6 +2,7 @@ package com.example.hyc.movieshow.datas.sources.remote;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.support.annotation.NonNull;
 import android.support.v4.net.ConnectivityManagerCompat;
 
 import com.example.hyc.movieshow.BuildConfig;
@@ -77,6 +78,18 @@ public class MoviesRemotoDataSource implements MoviesDataSource {
                 .addInterceptor(new CacheIntercapter()).cache(cache).build();
         Type token = new TypeToken<RealmList<RealmInt>>() {
         }.getType();
+        Gson gson = getTypeGson(token);
+        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(gson))
+                .addConverterFactory(StringConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .client(client)
+                .build();
+        mMoviesService = retrofit.create(MoviesService.class);
+    }
+
+    @NonNull
+    private Gson getTypeGson(Type token) {
         GsonBuilder gsonBuilder = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
             @Override
             public boolean shouldSkipField(FieldAttributes f) {
@@ -106,14 +119,7 @@ public class MoviesRemotoDataSource implements MoviesDataSource {
             }
         });
 
-        Gson gson = gsonBuilder.create();
-        Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create(gson))
-                .addConverterFactory(StringConverterFactory.create())
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .client(client)
-                .build();
-        mMoviesService = retrofit.create(MoviesService.class);
+        return gsonBuilder.create();
     }
 
     private class CacheIntercapter implements Interceptor {
@@ -166,21 +172,22 @@ public class MoviesRemotoDataSource implements MoviesDataSource {
     }
 
     @Override
-    public Flowable<List<MovieModel>> getMovies() {
+    public Flowable<List<MovieModel>> getMovies(int page) {
 
-        return mMoviesService.getMoviesFromOne(BuildConfig.Movie_Key, 1).map(new Function<MovieModel, List<MovieModel>>() {
-            @Override
-            public List<MovieModel> apply(MovieModel movieModel) throws Exception {
-                _movieModel = movieModel;
-                return movieModel.getResults();
-            }
-        });
+        return mMoviesService.getMoviesFromOne(BuildConfig.Movie_Key, page)
+                .map(new Function<MovieModel, List<MovieModel>>() {
+                    @Override
+                    public List<MovieModel> apply(MovieModel movieModel) throws Exception {
+                        _movieModel = movieModel;
+                        return movieModel.getResults();
+                    }
+                });
     }
 
     @Override
-    public Flowable<MovieModel> getMovie() {
+    public  MovieModel getMovie() {
 
-        return Flowable.just(_movieModel);
+        return _movieModel;
     }
 
     @Override

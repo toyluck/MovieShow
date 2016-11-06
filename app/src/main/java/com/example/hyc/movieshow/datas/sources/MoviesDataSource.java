@@ -12,9 +12,9 @@ import io.reactivex.Flowable;
 
 public interface MoviesDataSource
 {
-    Flowable<List<MovieModel>> getMovies();
+    Flowable<List<MovieModel>> getMovies(int page);
 
-    Flowable<MovieModel> getMovie();
+    MovieModel getMovie();
 
     void refreshMovies();
 

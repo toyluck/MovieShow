@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group
+        android:id="@+id/group_main"
+
+
+        android:enabled="true"
+        android:menuCategory="system">
+
+        <item
+            android:id="@+id/menu_main_1"
+            android:icon="@drawable/ic_folder"
+            android:title="本地拉取"
+
+            />
+        <item
+            android:id="@+id/menu_main_2"
+            android:icon="@mipmap/ic_launcher"
+            android:title="热门排序"
+            />
+
+        <item
+            android:id="@+id/menu_main_3"
+            android:icon="@mipmap/ic_launcher"
+            android:title="用户排序"
+            />
+    </group>
+</menu>

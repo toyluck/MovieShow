@@ -116,6 +116,7 @@ public class MovieModel extends RealmObject implements Observable {
     private double         vote_average;
     private RealmList<RealmInt> genre_ids;
 
+
     @Bindable
     public String getPoster_path() {
         return poster_path;
