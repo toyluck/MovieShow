@@ -8,20 +8,31 @@ import com.example.hyc.movieshow.BuildConfig;
 import com.example.hyc.movieshow.datas.MovieModel;
 import com.example.hyc.movieshow.datas.sources.BaseModel;
 import com.example.hyc.movieshow.datas.sources.MoviesDataSource;
+import com.example.hyc.movieshow.datas.sources.RealmInt;
 import com.example.hyc.movieshow.utils.FileUtils;
 import com.example.hyc.movieshow.utils.InternetUtils;
 import com.example.hyc.movieshow.utils.StringConverterFactory;
 import com.example.hyc.movieshow.utils.UIUtil;
+import com.google.gson.ExclusionStrategy;
+import com.google.gson.FieldAttributes;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.TypeAdapter;
 import com.google.gson.reflect.TypeToken;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import com.jakewharton.retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.List;
 
 import io.reactivex.Flowable;
 import io.reactivex.functions.Function;
+import io.realm.Realm;
+import io.realm.RealmList;
+import io.realm.RealmObject;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Interceptor;
@@ -64,9 +75,40 @@ public class MoviesRemotoDataSource implements MoviesDataSource {
 //                .addInterceptor(new ConverIntercapter())
                 // cache
                 .addInterceptor(new CacheIntercapter()).cache(cache).build();
+        Type token = new TypeToken<RealmList<RealmInt>>() {
+        }.getType();
+        GsonBuilder gsonBuilder = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
+            @Override
+            public boolean shouldSkipField(FieldAttributes f) {
+                return f.getDeclaredClass().equals(RealmObject.class);
+            }
 
+            @Override
+            public boolean shouldSkipClass(Class<?> clazz) {
+                return false;
+            }
+        }).registerTypeAdapter(token, new TypeAdapter<RealmList<RealmInt>>() {
+
+            @Override
+            public void write(JsonWriter out, RealmList<RealmInt> value) throws IOException {
+                // Ignore
+            }
+
+            @Override
+            public RealmList<RealmInt> read(JsonReader in) throws IOException {
+                RealmList<RealmInt> list = new RealmList<RealmInt>();
+                in.beginArray();
+                while (in.hasNext()) {
+                    list.add(new RealmInt(in.nextInt()));
+                }
+                in.endArray();
+                return list;
+            }
+        });
+
+        Gson gson = gsonBuilder.create();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .addConverterFactory(StringConverterFactory.create())
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .client(client)
@@ -150,6 +192,16 @@ public class MoviesRemotoDataSource implements MoviesDataSource {
 
     @Override
     public void loadMoreMovies() {
+
+    }
+
+    @Override
+    public void saveMovies(List<MovieModel> movieModels) {
+
+    }
+
+    @Override
+    public void release() {
 
     }
 }

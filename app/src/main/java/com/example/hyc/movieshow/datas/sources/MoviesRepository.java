@@ -19,45 +19,39 @@ import io.reactivex.functions.Function;
  * 用来处理 本地和 网络数据
  */
 
-public class MoviesRepository implements MoviesDataSource
-{
+public class MoviesRepository implements MoviesDataSource {
 
     public static MoviesRepository INSTANCE;
     private final MoviesDataSource mRemoteDataSouce;
     private final MoviesDataSource mLocalDataSouce;
     private       boolean          mCacheIsDirty;
-    
+
     private MoviesRepository(@NonNull MoviesDataSource moveisRemoteDataSouce, @NonNull MoviesDataSource
-        moviesLocalDataSouce)
-    {
+            moviesLocalDataSouce) {
         mRemoteDataSouce = moveisRemoteDataSouce;
         mLocalDataSouce = moviesLocalDataSouce;
     }
 
     public static MoviesRepository newInstance(@NonNull MoviesDataSource moveisRemoteDataSouce,
-                                               @NonNull MoviesDataSource moviesLocalDataSouce)
-    {
-        if (INSTANCE == null)
-        {
+                                               @NonNull MoviesDataSource moviesLocalDataSouce) {
+        if (INSTANCE == null) {
             INSTANCE = new MoviesRepository(moveisRemoteDataSouce, moviesLocalDataSouce);
         }
 
         return INSTANCE;
     }
 
-    public static void destroyInstance()
-    {
+    public static void destroyInstance() {
         INSTANCE = null;
     }
 
     @Override
-    public Flowable<List<MovieModel>> getMovies()
-    {
+    public Flowable<List<MovieModel>> getMovies() {
         Flowable<List<MovieModel>> remoteMovies = getAndSaveRemoteMovies();
-        if (mCacheIsDirty)
-        {
-
+        if (mCacheIsDirty) {
             return remoteMovies;
+        } else {
+            //
         }
 
 
@@ -65,24 +59,19 @@ public class MoviesRepository implements MoviesDataSource
     }
 
     //
-    private Flowable<List<MovieModel>> getAndSaveRemoteMovies()
-    {
-        return mRemoteDataSouce.getMovies().flatMap(new Function<List<MovieModel>, Publisher<List<MovieModel>>>()
-        {
+    private Flowable<List<MovieModel>> getAndSaveRemoteMovies() {
+        return mRemoteDataSouce.getMovies().flatMap(new Function<List<MovieModel>, Publisher<List<MovieModel>>>() {
             @Override
-            public Publisher<List<MovieModel>> apply(List<MovieModel> movieModels) throws Exception
-            {
-
+            public Publisher<List<MovieModel>> apply(List<MovieModel> movieModels) throws Exception {
+                saveMovies(movieModels);
                 Flowable<MovieModel> next = Flowable.fromIterable(movieModels)
-                    .doOnNext(new Consumer<MovieModel>()
-                    {
-                        @Override
-                        public void accept(MovieModel movieModel) throws Exception
-                        {
-                            // save data to local
+                        .doOnNext(new Consumer<MovieModel>() {
+                            @Override
+                            public void accept(MovieModel movieModel) throws Exception {
+                                // save data to local
 
-                        }
-                    });
+                            }
+                        });
                 Single<List<MovieModel>> single = next.toList();
 
                 return single.toFlowable();
@@ -92,21 +81,30 @@ public class MoviesRepository implements MoviesDataSource
     }
 
     @Override
-    public Flowable<MovieModel> getMovie()
-    {
-        return null;
+    public Flowable<MovieModel> getMovie() {
+
+        return mLocalDataSouce.getMovie();
     }
 
     @Override
-    public void refreshMovies()
-    {
+    public void refreshMovies() {
         // 缓存被污染
         mCacheIsDirty = true;
     }
 
     @Override
-    public void loadMoreMovies()
-    {
+    public void loadMoreMovies() {
+
+    }
+
+    @Override
+    public void saveMovies(List<MovieModel> movieModels) {
+        //保存
+        mLocalDataSouce.saveMovies(movieModels);
+    }
+
+    @Override
+    public void release() {
 
     }
 }

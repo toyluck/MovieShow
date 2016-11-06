@@ -2,6 +2,7 @@ package com.example.hyc.movieshow.Movies;
 
 import android.Manifest;
 import android.content.Intent;
+import android.databinding.ViewDataBinding;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -47,7 +48,7 @@ import io.reactivex.functions.Function;
 public class MoviesFragment extends Fragment implements MoviesContract.View {
 
     private MoviesContract.Presenter mPresenter;
-    private FragMoviesBinding        mDataBinding;
+    private FragMoviesBinding          mDataBinding;
     private MovieAdapter             mMovieAdapter;
 
     public static MoviesFragment newInstance() {

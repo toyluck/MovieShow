@@ -36,7 +36,9 @@ public class MovieBinds
         }
 
     }
+    public MovieBinds(){
 
+    }
     @BindingAdapter({
         "bind:imgsrc"
     })

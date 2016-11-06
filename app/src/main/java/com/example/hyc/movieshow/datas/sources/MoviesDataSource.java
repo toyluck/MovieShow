@@ -19,4 +19,9 @@ public interface MoviesDataSource
     void refreshMovies();
 
     void loadMoreMovies();
+
+    void saveMovies(List<MovieModel> movieModels);
+
+    void release();
+
 }

@@ -78,4 +78,5 @@ dependencies {
     compile ok.log
     compile 'com.tbruyelle.rxpermissions2:rxpermissions:0.8.1@aar'
     compile supportDependencies.constraint
+    apt 'com.google.guava:guava:19.0'
 }
