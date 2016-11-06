@@ -19,4 +19,9 @@ public interface MoviesService
     @Headers("Cache-Control:public,max-age=3600")
     @GET("/3/movie/popular")
     Flowable<List<MovieModel>> getMovies(@Query("api_key") String apikey, @Query("page") int page);
+
+
+    @Headers("Cache-Control:public,max-age=3600")
+    @GET("/3/movie/popular")
+    Flowable<MovieModel> getMoviesFromOne(@Query("api_key") String apikey, @Query("page") int page);
 }

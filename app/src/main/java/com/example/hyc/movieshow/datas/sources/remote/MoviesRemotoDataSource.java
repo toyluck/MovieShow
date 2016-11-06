@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.util.List;
 
 import io.reactivex.Flowable;
+import io.reactivex.functions.Function;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Interceptor;
@@ -45,6 +46,7 @@ public class MoviesRemotoDataSource implements MoviesDataSource {
     public static final int CACHE_SIZE = 1024 * 1024 * 20;//20mb
 
     private final MoviesService mMoviesService;
+    private       MovieModel    _movieModel;
 
     public MoviesRemotoDataSource() {
         OkHttpClient           client             = new OkHttpClient();
@@ -55,7 +57,12 @@ public class MoviesRemotoDataSource implements MoviesDataSource {
         File   netCache    = new File(storagePath, "NetCache");
         Cache  cache       = new Cache(netCache, CACHE_SIZE);
 
-        client = client.newBuilder().addInterceptor(loggingInterceptor).addInterceptor(new ConverIntercapter())
+        client = client.newBuilder()
+                // log
+                .addInterceptor(loggingInterceptor)
+                // 数据格式化
+//                .addInterceptor(new ConverIntercapter())
+                // cache
                 .addInterceptor(new CacheIntercapter()).cache(cache).build();
 
         Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
@@ -92,7 +99,7 @@ public class MoviesRemotoDataSource implements MoviesDataSource {
     }
 
     private class ConverIntercapter implements Interceptor {
-        public final MediaType JSON = MediaType.parse("application/json;charset=utf-8");
+        final MediaType JSON = MediaType.parse("application/json;charset=utf-8");
         Gson mGson = new Gson();
 
         @Override
@@ -105,7 +112,10 @@ public class MoviesRemotoDataSource implements MoviesDataSource {
             List results = model.getResults();
             String json = mGson.toJson(results, new TypeToken<List>() {
             }.getType());
-            return response.newBuilder().body(ResponseBody.create(JSON, json)).build();
+            //java.lang.IllegalStateException: closed
+            // reading the response body 2x? You can only call string() once.
+//            return response.newBuilder().body(ResponseBody.create(JSON, model.toString())).build();
+            return response.newBuilder().build();
         }
     }
 
@@ -115,12 +125,20 @@ public class MoviesRemotoDataSource implements MoviesDataSource {
 
     @Override
     public Flowable<List<MovieModel>> getMovies() {
-        return mMoviesService.getMovies(BuildConfig.Movie_Key, 1);
+
+        return mMoviesService.getMoviesFromOne(BuildConfig.Movie_Key, 1).map(new Function<MovieModel, List<MovieModel>>() {
+            @Override
+            public List<MovieModel> apply(MovieModel movieModel) throws Exception {
+                _movieModel = movieModel;
+                return movieModel.getResults();
+            }
+        });
     }
 
     @Override
     public Flowable<MovieModel> getMovie() {
-        return null;
+
+        return Flowable.just(_movieModel);
     }
 
     @Override
