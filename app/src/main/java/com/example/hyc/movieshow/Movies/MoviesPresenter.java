@@ -79,35 +79,7 @@ public class MoviesPresenter implements MoviesContract.Presenter
 
         Flowable<List<MovieModel>> movies = mMoviesRepository.getMovies();
         movies.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
-//                subscribe(new Subscriber<List<MovieModel>>()
-//            {
-//                @Override
-//                public void onSubscribe(Subscription s)
-//                {
-//                    System.out.println("MoviesPresenter.onSubscribe");
-//                    System.out.println("s = [" + s + "]");
-//                }
-//
-//                @Override
-//                public void onNext(List<MovieModel> movieModels)
-//                {
-//                    System.out.println("movieModels = [" + movieModels + "]");
-//                    System.out.println("MoviesPresenter.onNext");
-//                    System.out.println("movieModels = " + movieModels);
-//                }
-//
-//                @Override
-//                public void onError(Throwable t)
-//                {
-//                    System.out.println("t.getMessage() = " + t.getMessage());
-//                }
-//
-//                @Override
-//                public void onComplete()
-//                {
-//                    System.out.println("MoviesPresenter.onComplete");
-//                }
-//            });
+
     single(new ArrayList<MovieModel>()).subscribe(new SingleObserver<List<MovieModel>>()
         {
             @Override
@@ -127,7 +99,7 @@ public class MoviesPresenter implements MoviesContract.Presenter
             @Override
             public void onError(Throwable e)
             {
-
+                System.out.println("e = " + e);
             }
         });
 
