@@ -27,4 +27,27 @@ public class FragmentUtils
         transaction.commitAllowingStateLoss();
 
     }
+
+    public static Fragment switchFragment(FragmentManager fragmentManager, Fragment from, Fragment to,
+                                          @IdRes int container)
+    {
+        checkNotNull(fragmentManager);
+        checkNotNull(from);
+        checkNotNull(to);
+
+        if (from == to) return from;
+        FragmentTransaction transaction = fragmentManager.beginTransaction();
+        if (!to.isAdded())
+        {
+            transaction.hide(from).add(container, to);
+        } else
+        {
+            transaction.hide(from).show(to);
+        }
+
+        transaction.commitAllowingStateLoss();
+
+        return to;
+
+    }
 }

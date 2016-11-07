@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout>
+    <data>
+        <variable name="model" type="com.example.hyc.movieshow.datas.MovieModel"/>
+    </data>
+    <android.support.design.widget.CoordinatorLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+    >
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fitsSystemWindows="true"
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/colla_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:contentScrim="@color/ctl_scrim"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed"
+                app:statusBarScrim="@android:color/transparent"
+                app:title="Test"
+
+                app:titleEnabled="true">
+
+                <ImageView android:id="@+id/img_ctl"
+                           android:layout_width="match_parent"
+                           android:layout_height="250dp"
+                           android:contentDescription="@string/showtitleimage"
+                           android:fitsSystemWindows="true"
+                           android:scaleType="centerCrop"
+                           app:imgbigsrc="@{model.poster_path}"
+                           app:layout_collapseMode="parallax"
+                           app:layout_collapseParallaxMultiplier="0.8"/>
+
+                <View android:layout_width="match_parent"
+                      android:layout_height="40dp"
+                      android:background="@drawable/gradent_status_bar"
+                      android:fitsSystemWindows="true"
+                      app:layout_collapseMode="pin"
+                />
+                <!--todo   bugou jingxi-->
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/tool_bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="?actionBarSize"
+                    app:layout_collapseMode="pin"
+                    app:popupTheme="@style/AppTheme.PopupOverlay">
+                    <android.support.v7.widget.ButtonBarLayout
+                        android:id="@+id/btnb_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center">
+                        <ImageView
+                            android:id="@+id/img_play"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_horizontal"
+                            android:src="@drawable/ic_play_circle_filled"
+                            android:visibility="gone"
+                        />
+                        <TextView android:id="@+id/tv_tool_title"
+                                  android:layout_width="wrap_content"
+                                  android:layout_height="wrap_content"
+                                  android:layout_gravity="center"
+                                  android:text="@{model.title}"
+                                  android:textColor="#fff"
+                                  android:textSize="24sp"/>
+                    </android.support.v7.widget.ButtonBarLayout>
+                </android.support.v7.widget.Toolbar>
+            </android.support.design.widget.CollapsingToolbarLayout>
+        </android.support.design.widget.AppBarLayout>
+
+
+
+
+        <FrameLayout android:id="@+id/act_template_frame"
+                     android:layout_width="match_parent"
+                     android:layout_height="match_parent"
+                     app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        </FrameLayout>
+    </android.support.design.widget.CoordinatorLayout>
+</layout>

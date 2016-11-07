@@ -4,90 +4,99 @@ import android.support.annotation.NonNull;
 
 import com.example.hyc.movieshow.datas.MovieModel;
 
-import org.reactivestreams.Publisher;
-
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import io.reactivex.Flowable;
-import io.reactivex.Single;
+import io.reactivex.ObservableSource;
 import io.reactivex.functions.Action;
-import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
-import io.reactivex.schedulers.Schedulers;
 
 /**
  * Created by hyc on 16-11-5.
  * 用来处理 本地和 网络数据
  */
 
-public class MoviesRepository implements MoviesDataSource {
+public class MoviesRepository implements MoviesDataSource
+{
 
     public static MoviesRepository INSTANCE;
     private final MoviesDataSource mRemoteDataSouce;
     private final MoviesDataSource mLocalDataSouce;
     private       boolean          mCacheIsDirty;
+    private LinkedHashMap<Integer, MovieModel> mMovieCached = new LinkedHashMap<>();
 
     private MoviesRepository(@NonNull MoviesDataSource moveisRemoteDataSouce, @NonNull MoviesDataSource
-            moviesLocalDataSouce) {
+        moviesLocalDataSouce)
+    {
         mRemoteDataSouce = moveisRemoteDataSouce;
         mLocalDataSouce = moviesLocalDataSouce;
     }
 
     public static MoviesRepository newInstance(@NonNull MoviesDataSource moveisRemoteDataSouce,
-                                               @NonNull MoviesDataSource moviesLocalDataSouce) {
-        if (INSTANCE == null) {
+                                               @NonNull MoviesDataSource moviesLocalDataSouce)
+    {
+        if (INSTANCE == null)
+        {
             INSTANCE = new MoviesRepository(moveisRemoteDataSouce, moviesLocalDataSouce);
         }
 
         return INSTANCE;
     }
 
-    public static void destroyInstance() {
+    public static void destroyInstance()
+    {
         INSTANCE = null;
     }
 
     @Override
-    public Flowable<List<MovieModel>> getMovies(int page) {
-
+    public Flowable<List<MovieModel>> getMovies(int page)
+    {
+        if (mMovieCached != null && !mCacheIsDirty)
+        {
+//            return getAndSaveMomeMovies(page);
+            return Flowable.fromIterable(mMovieCached.values()).toList().toFlowable();
+        }
         Flowable<List<MovieModel>> remoteMovies = getAndSaveRemoteMovies(page);
-        if (!mCacheIsDirty) {
+        if (mCacheIsDirty)
+        {
             return remoteMovies;
-        } else {
-            //
+        } else
+        {
+
             return getAndSaveMomeMovies(page);
         }
 
 
     }
 
-    private Flowable<List<MovieModel>> getAndSaveMomeMovies(int page) {
+    private Flowable<List<MovieModel>> getAndSaveMomeMovies(int page)
+    {
 
         return mLocalDataSouce.getMovies(page);
     }
 
 
-    //
-    private Flowable<List<MovieModel>> getAndSaveRemoteMovies(int page) {
-        return mRemoteDataSouce.getMovies(page).flatMap(new Function<List<MovieModel>,
-                Publisher<List<MovieModel>>>() {
+    private Flowable<List<MovieModel>> getAndSaveRemoteMovies(int page)
+    {
+        return mRemoteDataSouce.getMovies(page).map(new Function<List<MovieModel>, List<MovieModel>>()
+        {
             @Override
-            public Publisher<List<MovieModel>> apply(List<MovieModel> movieModels) throws Exception {
+            public List<MovieModel> apply(List<MovieModel> movieModels) throws Exception
+            {
                 saveMovies(movieModels);
-                Flowable<MovieModel> next = Flowable.fromIterable(movieModels)
-                        .doOnNext(new Consumer<MovieModel>() {
-                            @Override
-                            public void accept(MovieModel movieModel) throws Exception {
-                                // save data to local);
-
-                            }
-                        });
-                Single<List<MovieModel>> single = next.toList();
-
-                return single.toFlowable();
+                for (MovieModel movieModel : movieModels)
+                {
+                    mMovieCached.put(movieModel.getId(), movieModel);
+                }
+                return movieModels;
             }
-        }).doOnComplete(new Action() {
+        }).doOnComplete(new Action()
+        {
             @Override
-            public void run() throws Exception {
+            public void run() throws Exception
+            {
                 mCacheIsDirty = false;
             }
         });
@@ -95,30 +104,35 @@ public class MoviesRepository implements MoviesDataSource {
     }
 
     @Override
-    public  MovieModel getMovie() {
+    public MovieModel getMovie()
+    {
 
-        return mRemoteDataSouce.getMovie()==null?mLocalDataSouce.getMovie():mRemoteDataSouce.getMovie();
+        return mRemoteDataSouce.getMovie() == null ? mLocalDataSouce.getMovie() : mRemoteDataSouce.getMovie();
     }
 
     @Override
-    public void refreshMovies() {
+    public void refreshMovies()
+    {
         // 缓存被污染
         mCacheIsDirty = true;
     }
 
     @Override
-    public void loadMoreMovies() {
+    public void loadMoreMovies()
+    {
 
     }
 
     @Override
-    public void saveMovies(List<MovieModel> movieModels) {
+    public void saveMovies(List<MovieModel> movieModels)
+    {
         //保存
         mLocalDataSouce.saveMovies(movieModels);
     }
 
     @Override
-    public void release() {
+    public void release()
+    {
 
     }
 }

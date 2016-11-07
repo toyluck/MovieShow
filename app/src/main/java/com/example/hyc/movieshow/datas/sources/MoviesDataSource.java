@@ -1,5 +1,6 @@
 package com.example.hyc.movieshow.datas.sources;
 
+import com.example.hyc.movieshow.Movies.MoviesFilterType;
 import com.example.hyc.movieshow.datas.MovieModel;
 
 import java.util.List;
@@ -23,5 +24,6 @@ public interface MoviesDataSource
     void saveMovies(List<MovieModel> movieModels);
 
     void release();
+
 
 }

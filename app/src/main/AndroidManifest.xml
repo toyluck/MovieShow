@@ -3,15 +3,17 @@
           package="com.example.hyc.movieshow">
 
     <uses-permission android:name="android.permission.INTERNET"/>
+
     <uses-permission-sdk-23 android:name="android.permission.INTERNET"/>
 
     <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-    <!--我的手机没有请求权限提示框 权限提示已经打开了!-->
+    <!-- 我的手机没有请求权限提示框 权限提示已经打开了! -->
     <uses-permission-sdk-23 android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission-sdk-23 android:name="android.permission.READ_EXTERNAL_STORAGE"/>
     <uses-permission-sdk-23 android:name="android.permission.READ_CONTACTS"/>
     <uses-permission-sdk-23 android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
     <application
         android:name=".App"
         android:allowBackup="true"
@@ -25,6 +27,16 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".moviesdetail.MovieDetailActivity"
+            android:parentActivityName=".Movies.MoviesActivity"
+            android:theme="@style/act_transparent">
+        </activity>
+        <activity
+            android:name=".ScrollingActivity"
+            android:label="@string/title_activity_scrolling"
+            android:theme="@style/AppTheme">
         </activity>
     </application>
 

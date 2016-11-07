@@ -3,9 +3,12 @@ package com.example.hyc.movieshow.datas;
 import android.databinding.Bindable;
 import android.databinding.Observable;
 import android.databinding.PropertyChangeRegistry;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.example.hyc.movieshow.datas.sources.RealmInt;
 
+import java.io.Serializable;
 import java.util.List;
 
 import io.realm.RealmList;
@@ -16,14 +19,53 @@ import io.realm.annotations.RealmClass;
 
 /**
  * Created by hyc on 16-11-5.
+ *
  */
 @RealmClass
-public class MovieModel extends RealmObject implements Observable {
+public class MovieModel extends RealmObject implements Observable ,Parcelable{
+
+    @Ignore
+    public static final String KEY = "MovieModel";
     @Ignore
     private   PropertyChangeRegistry mCallbacks;
 
     public MovieModel() {
     }
+
+    protected MovieModel(Parcel in)
+    {
+        page = in.readInt();
+        total_results = in.readInt();
+        total_pages = in.readInt();
+        poster_path = in.readString();
+        adult = in.readByte() != 0;
+        overview = in.readString();
+        release_date = in.readString();
+        id = in.readInt();
+        original_title = in.readString();
+        original_language = in.readString();
+        title = in.readString();
+        backdrop_path = in.readString();
+        popularity = in.readDouble();
+        vote_count = in.readInt();
+        video = in.readByte() != 0;
+        vote_average = in.readDouble();
+    }
+
+    public static final Creator<MovieModel> CREATOR = new Creator<MovieModel>()
+    {
+        @Override
+        public MovieModel createFromParcel(Parcel in)
+        {
+            return new MovieModel(in);
+        }
+
+        @Override
+        public MovieModel[] newArray(int size)
+        {
+            return new MovieModel[size];
+        }
+    };
 
     @Override
     public synchronized void addOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
@@ -104,8 +146,10 @@ public class MovieModel extends RealmObject implements Observable {
     private boolean        adult;
     private String         overview;
     private String         release_date;
+
     @PrimaryKey
     private int            id;
+
     private String         original_title;
     private String         original_language;
     private String         title;
@@ -248,5 +292,33 @@ public class MovieModel extends RealmObject implements Observable {
                 ", vote_average=" + vote_average +
                 ", genre_ids=" + genre_ids +
                 '}';
+    }
+
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+
+        dest.writeInt(page);
+        dest.writeInt(total_results);
+        dest.writeInt(total_pages);
+        dest.writeString(poster_path);
+        dest.writeByte((byte) (adult ? 1 : 0));
+        dest.writeString(overview);
+        dest.writeString(release_date);
+        dest.writeInt(id);
+        dest.writeString(original_title);
+        dest.writeString(original_language);
+        dest.writeString(title);
+        dest.writeString(backdrop_path);
+        dest.writeDouble(popularity);
+        dest.writeInt(vote_count);
+        dest.writeByte((byte) (video ? 1 : 0));
+        dest.writeDouble(vote_average);
     }
 }
