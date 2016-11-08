@@ -19,7 +19,7 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder>
     public void setDataSource(List<MovieModel> dataSource)
     {
         mDataSource = dataSource;
-        notifyDataSetChanged();
+        notifyItemRangeChanged(0, dataSource.size());
     }
 
     public MovieAdapter(MovieClickListener listener)
@@ -49,6 +49,8 @@ class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder>
     public void onBindViewHolder(MovieViewHolder holder, int position)
     {
         holder.mItemMovieBinding.setModel(getItem(position));
+        // 立即刷新
+        holder.mItemMovieBinding.executePendingBindings();
     }
 
     public MovieModel getItem(int position)

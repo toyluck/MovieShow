@@ -1,7 +1,6 @@
 package com.example.hyc.movieshow.moviesdetail;
 
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,7 +10,6 @@ import android.widget.RadioGroup;
 
 import com.example.hyc.movieshow.R;
 import com.example.hyc.movieshow.databinding.FragMovieDetailBinding;
-import com.example.hyc.movieshow.databinding.FragMoviesBinding;
 import com.example.hyc.movieshow.datas.MovieModel;
 import com.example.hyc.movieshow.utils.FragmentUtils;
 
@@ -22,7 +20,10 @@ import com.example.hyc.movieshow.utils.FragmentUtils;
 public class MovieDetailFragment extends Fragment implements RadioGroup.OnCheckedChangeListener
 {
 
+
     private FragMovieDetailBinding mMovieDetailBinding;
+    private InfoFragment           mInfoFragment;
+    private RelatedFragment        mRelatedFragment;
 
     public static MovieDetailFragment newInstance(MovieModel movieModel)
     {
@@ -47,7 +48,9 @@ public class MovieDetailFragment extends Fragment implements RadioGroup.OnChecke
     {
         mMovieDetailBinding.rgMovieDetail.setOnCheckedChangeListener(this);
         MovieModel model = getArguments().getParcelable(MovieModel.KEY);
-        FragmentUtils.addFragmentToActivity(getChildFragmentManager(), InfoFragment.newInstance(model), R.id
+        mInfoFragment = InfoFragment.newInstance(model);
+
+        FragmentUtils.addFragmentToActivity(getChildFragmentManager(), mInfoFragment, R.id
             .frame_movie_detail);
     }
 
@@ -63,10 +66,15 @@ public class MovieDetailFragment extends Fragment implements RadioGroup.OnChecke
         {
             case R.id.rb_info:
                 // 信息fragment
+                FragmentUtils.switchFragment(getChildFragmentManager(), mRelatedFragment, mInfoFragment, R.id
+                    .frame_movie_detail);
                 break;
             case R.id.rb_relate:
                 // relate fragment
-
+                if (mRelatedFragment == null)
+                    mRelatedFragment = new RelatedFragment();
+                FragmentUtils.switchFragment(getChildFragmentManager(), mInfoFragment, mRelatedFragment, R.id
+                    .frame_movie_detail);
                 break;
         }
     }

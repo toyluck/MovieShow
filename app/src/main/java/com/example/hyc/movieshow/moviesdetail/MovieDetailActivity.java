@@ -19,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.hyc.movieshow.R;
-import com.example.hyc.movieshow.ScrollingActivity;
 import com.example.hyc.movieshow.databinding.ActTemplateBinding;
 import com.example.hyc.movieshow.datas.MovieModel;
 import com.example.hyc.movieshow.utils.FragmentUtils;

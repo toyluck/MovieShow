@@ -4,52 +4,73 @@
         xmlns:tools="http://schemas.android.com/tools">
     <data>
         <variable name="model" type="com.example.hyc.movieshow.datas.MovieModel"/>
-
     </data>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="match_parent"
+                  android:background="@color/colorPrimary"
+                  android:orientation="vertical"
+                  android:paddingLeft="2dp"
+                  android:paddingRight="2dp">
 
-    <android.support.constraint.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-        <Button
-            android:id="@+id/ib_clock"
-            android:layout_width="120dp" android:layout_height="0dp"
-            app:srcCompat="@android:drawable/btn_radio"
-            app:layout_constraintRight_toLeftOf="@+id/ib_rating"
+        <TextView android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_marginBottom="30dp"
+                  android:layout_marginTop="30dp"
+                  android:text="@{@string/filmname(model.title)}"
+                  android:textColor="@android:color/white"
+                  android:textSize="30sp"
+                  tools:text="你爱上对方"/>
 
-            tools:layout_constraintTop_creator="1" tools:layout_constraintBottom_creator="1"
-            app:layout_constraintBottom_toBottomOf="@+id/ib_rating"
-            app:layout_constraintTop_toTopOf="@+id/ib_rating"/>
-        <ImageButton
-            android:id="@+id/ib_rating"
-            android:layout_width="120dp" android:layout_height="100dp"
-            app:srcCompat="@android:drawable/btn_star"
-            tools:layout_constraintRight_creator="1" tools:layout_constraintBottom_creator="1"
-            app:layout_constraintBottom_toTopOf="@+id/tv_profile"
-            app:layout_constraintRight_toRightOf="parent" tools:layout_constraintLeft_creator="1"
-            android:layout_marginBottom="40dp" app:layout_constraintLeft_toLeftOf="parent"/>
-        <ImageButton
-            android:id="@+id/ib_date"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            app:srcCompat="@android:drawable/ic_lock_idle_alarm"
-            tools:layout_constraintTop_creator="1" tools:layout_constraintRight_creator="1"
-            tools:layout_constraintBottom_creator="1" android:layout_marginStart="5dp"
-            app:layout_constraintBottom_toBottomOf="@+id/ib_rating" android:layout_marginEnd="7dp"
-            app:layout_constraintRight_toRightOf="parent" tools:layout_constraintLeft_creator="1"
-            app:layout_constraintTop_toTopOf="@+id/ib_rating"
-            app:layout_constraintLeft_toRightOf="@+id/ib_rating" android:layout_marginLeft="5dp"
-            android:layout_marginRight="7dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView android:layout_width="0dp"
+                      android:layout_height="130dp"
+                      android:layout_weight="1"
+                      android:background="@drawable/draw_round_red_backgroud"
+                      android:drawableTop="@drawable/ic_access_time"
+                      android:gravity="center"
+                      android:paddingTop="20dp"
+                      android:text="@{@string/runtime(model.popularity)}"
+                      android:textColor="@android:color/white"/>
+
+            <TextView android:layout_width="0dp"
+                      android:layout_height="130dp"
+                      android:layout_weight="1"
+                      android:background="@drawable/draw_round_yellow_backgroud"
+                      android:drawableTop="@drawable/ic_grade_black"
+                      android:gravity="center"
+                      android:paddingTop="20dp"
+                      android:text="@{@string/rating(model.vote_average)}"
+                      android:textColor="@android:color/white"/>
+
+            <TextView android:layout_width="0dp"
+                      android:layout_height="130dp"
+                      android:layout_weight="1"
+                      android:background="@drawable/draw_round_blue_backgroud"
+                      android:drawableTop="@drawable/ic_event_note_black"
+                      android:gravity="center"
+                      android:paddingTop="20dp"
+                      android:text="@{@string/release_time(model.release_date)}"
+                      android:textColor="@android:color/white"/>
+
+        </LinearLayout>
+
+        <!--todo blank-->
         <TextView
-            android:text="TextView"
-            android:layout_width="0dp"
-            android:layout_height="258dp"
-            android:id="@+id/tv_profile"
-            tools:layout_constraintRight_creator="1" tools:layout_constraintBottom_creator="1"
-            android:layout_marginStart="10dp" app:layout_constraintBottom_toBottomOf="parent"
-            android:layout_marginEnd="10dp" app:layout_constraintRight_toRightOf="parent"
-            tools:layout_constraintLeft_creator="1"
-            app:layout_constraintLeft_toLeftOf="parent" android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp" app:layout_constraintHorizontal_bias="0.15"
-        />
-    </android.support.constraint.ConstraintLayout>
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="40dp"
+            android:elegantTextHeight="true"
+            android:ellipsize="end"
+            android:gravity="clip_horizontal"
+            android:maxLines="2"
+            android:text="@{model.overview}"
+            android:textColor="@color/ashen_dark"
+            android:textSize="20sp"
+            android:onClick="@{(v)->v.isv.setEllipsize()}"
+            tools:text="ni zda asf asf safsaasdaa saf saf sadf safs sadf sadf sdada sdj khjs afas kjd fhk sja dfasfk jsadfh。"/>
+    </LinearLayout>
 </layout>

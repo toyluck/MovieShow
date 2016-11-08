@@ -97,6 +97,7 @@ public class MoviesFragment extends Fragment implements MoviesContract.View, Mov
             }
         };
         Realm.getDefaultInstance().addChangeListener(mRealmChangeListener);
+        mPresenter.subscribe();
         return mDataBinding.getRoot();
     }
 
@@ -104,7 +105,6 @@ public class MoviesFragment extends Fragment implements MoviesContract.View, Mov
     public void onResume()
     {
         super.onResume();
-        mPresenter.subscribe();
 
     }
 
@@ -161,74 +161,6 @@ public class MoviesFragment extends Fragment implements MoviesContract.View, Mov
         }
     }
 
-    private void testRxjava2()
-    {
-        Flowable.create(new FlowableOnSubscribe<Integer>()
-        {
-            @Override
-            public void subscribe(FlowableEmitter<Integer> e) throws Exception
-            {
-
-            }
-        }, BackpressureStrategy.ERROR);
-        final List<MovieModel> models = new ArrayList<>();
-
-        Flowable<MovieModel> movieModelFlowable = Flowable.fromIterable(models).onBackpressureBuffer().observeOn(AndroidSchedulers.mainThread());
-        movieModelFlowable.flatMap(new Function<MovieModel, Publisher<MovieModel>>()
-        {
-            @Override
-            public Publisher<MovieModel> apply(MovieModel movieModel) throws Exception
-            {
-                System.out.println("movieModel = " + movieModel);
-
-                return Flowable.just(movieModel);
-            }
-        }).subscribe(new Consumer<MovieModel>()
-        {
-            @Override
-            public void accept(MovieModel movieModel) throws Exception
-            {
-                System.out.println("movieModel 2= " + movieModel);
-            }
-
-        });
-
-        movieModelFlowable.flatMapSingle(new Function<MovieModel, SingleSource<?>>()
-        {
-            @Override
-            public SingleSource<?> apply(MovieModel movieModel) throws Exception
-            {
-                return null;
-            }
-        }).subscribe(new Subscriber<Object>()
-        {
-            @Override
-            public void onSubscribe(Subscription s)
-            {
-                System.out.println("s = " + s);
-            }
-
-            @Override
-            public void onNext(Object o)
-            {
-                System.out.println("MoviesFragment.onNext");
-                System.out.println("o = " + o);
-            }
-
-            @Override
-            public void onError(Throwable t)
-            {
-                System.out.println("MoviesFragment.onError");
-                System.out.println("t = " + t);
-            }
-
-            @Override
-            public void onComplete()
-            {
-                System.out.println("MoviesFragment.onComplete");
-            }
-        });
-    }
 
     @Override
     public void onPause()
@@ -276,19 +208,49 @@ public class MoviesFragment extends Fragment implements MoviesContract.View, Mov
     public void setLoadingIndicator(boolean showLoadingUi)
     {
         //展示loading页面
-        Toast.makeText(MoviesFragment.this.getActivity(), "开始loading", Toast.LENGTH_SHORT).show();
+        if (showLoadingUi)
+            Toast.makeText(MoviesFragment.this.getActivity(), "开始loading", Toast.LENGTH_SHORT).show();
+        else
+        {
+
+        }
     }
 
     @Override
     public void showMovies(List<MovieModel> movies)
     {
+
         mMovieAdapter.setDataSource(movies);
+    }
+
+    @Override
+    public void showLoadingMoviesError()
+    {
+        Toast.makeText(getActivity(), "加载失败", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public boolean isActive()
+    {
+        return isAdded();
+    }
+
+    @Override
+    public void showFiltingPopUpMenu()
+    {
+
+    }
+
+    @Override
+    public void showMovieDetailUi(MovieModel model, int position)
+    {
+        MovieDetailActivity.start(getActivity(), model);
     }
 
 
     @Override
     public void click(MovieModel model, int position)
     {
-        MovieDetailActivity.start(getActivity(), model);
+        mPresenter.openMovieDetail(model, position);
     }
 }

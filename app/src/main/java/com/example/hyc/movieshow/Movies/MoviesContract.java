@@ -1,10 +1,11 @@
 package com.example.hyc.movieshow.Movies;
 
+import android.graphics.Movie;
+
 import com.example.hyc.movieshow.BasePresenter;
 import com.example.hyc.movieshow.BaseView;
 import com.example.hyc.movieshow.datas.MovieModel;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -20,6 +21,15 @@ public interface MoviesContract
         void setLoadingIndicator(boolean showLoadingUi);
 
         void showMovies(List<MovieModel> movies);
+
+        void showLoadingMoviesError();
+
+        boolean isActive();
+
+        void showFiltingPopUpMenu();
+
+
+        void showMovieDetailUi(MovieModel model, int position);
     }
 
     interface Presenter extends BasePresenter
@@ -29,6 +39,8 @@ public interface MoviesContract
         MoviesFilterType getFiltering();
 
         void loadTaks(boolean forceUpdate);
+
+        void openMovieDetail(MovieModel model, int position);
     }
 
 

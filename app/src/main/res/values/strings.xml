@@ -102,4 +102,8 @@
     <string name="play">Play</string>
     <string name="related">Related</string>
     <string name="info">Info</string>
+    <string name="runtime">Runtime : %s</string>
+    <string name="rating">Rating : %s</string>
+    <string name="release_time">Released : %s</string>
+    <string name="filmname">Title : %s</string>
 </resources>

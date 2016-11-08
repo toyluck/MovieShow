@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimary">#212123</color>
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="blue">#800acefa</color>
     <color name="ctl_scrim">#de000000</color>
     <color name="ctl_bar_scrim">#45e67d</color>
+
+    <color name="cyan">#05918a</color>
+    <color name="yellow">#f28831</color>
+    <color name="ashenred">#e94691</color>
+
+    <color name="start_shadow_color">#252424</color>
+    <color name="end_shadow_color">#2e2e2d</color>
+    <color name="ashen_dark">#2eff</color>
 </resources>

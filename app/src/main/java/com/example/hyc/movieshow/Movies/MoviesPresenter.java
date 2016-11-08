@@ -7,6 +7,8 @@ import android.widget.Toast;
 import com.example.hyc.movieshow.datas.MovieModel;
 import com.example.hyc.movieshow.datas.sources.MoviesRepository;
 import com.example.hyc.movieshow.utils.EspressoIdingResource;
+import com.example.hyc.movieshow.utils.schedulers.BaseSchedulersProvider;
+import com.example.hyc.movieshow.utils.schedulers.SchedulerProvider;
 import com.squareup.haha.guava.collect.Collections2;
 
 import org.reactivestreams.Subscriber;
@@ -27,6 +29,8 @@ import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import io.realm.Sort;
 
+import static com.google.gson.internal.$Gson$Preconditions.checkNotNull;
+
 /**
  * Created by hyc on 16-11-5.
  * 电影页面的Presenter 层
@@ -35,15 +39,19 @@ import io.realm.Sort;
 public class MoviesPresenter implements MoviesContract.Presenter
 {
 
-    private final MoviesContract.View mMovieView;
-    private final MoviesRepository    mMoviesRepository;
-    private       CompositeDisposable mSubscriptions;
+    private final MoviesContract.View    mMovieView;
+    private final MoviesRepository       mMoviesRepository;
+    private final BaseSchedulersProvider mSchedulersProvider;
+    private       CompositeDisposable    mSubscriptions;
 
-    public MoviesPresenter(@NonNull MoviesRepository moviesRepository, MoviesContract.View view)
+    public MoviesPresenter(@NonNull MoviesRepository moviesRepository, MoviesContract.View view,
+                           @NonNull BaseSchedulersProvider
+                               schedulerProvider)
     {
         mMovieView = view;
         mMovieView.bindPresenter(this);
         mMoviesRepository = moviesRepository;
+        mSchedulersProvider = schedulerProvider;
         mSubscriptions = new CompositeDisposable();
     }
 
@@ -56,7 +64,7 @@ public class MoviesPresenter implements MoviesContract.Presenter
     @Override
     public void unsubscribe()
     {
-
+        mSubscriptions.clear();
     }
 
     private MoviesFilterType mFilterType = MoviesFilterType.DefaultType;
@@ -86,11 +94,10 @@ public class MoviesPresenter implements MoviesContract.Presenter
             mMovieView.setLoadingIndicator(true);
         }
         // 非静态
-        EspressoIdingResource.increment();
         mSubscriptions.clear();
 
         Flowable<List<MovieModel>> movies = mMoviesRepository.getMovies(page);
-        movies.subscribeOn(Schedulers.newThread())
+        movies.subscribeOn(mSchedulersProvider.newThread())
             .single(new ArrayList<MovieModel>())
             .map(new Function<List<MovieModel>,
                 List<MovieModel>>()
@@ -126,13 +133,15 @@ public class MoviesPresenter implements MoviesContract.Presenter
                     return movieModels;
                 }
             })
-            .observeOn(AndroidSchedulers.mainThread())
+            .observeOn(mSchedulersProvider.ui())
             .subscribe(new SingleObserver<List<MovieModel>>()
             {
                 @Override
                 public void onSubscribe(Disposable d)
                 {
                     System.out.println("d = " + d);
+                    EspressoIdingResource.increment();
+                    mMovieView.setLoadingIndicator(true);
                 }
 
                 @Override
@@ -141,16 +150,24 @@ public class MoviesPresenter implements MoviesContract.Presenter
                     EspressoIdingResource.decrement();
 
                     mMovieView.showMovies(value);
+                    mMovieView.setLoadingIndicator(false);
                 }
 
                 @Override
                 public void onError(Throwable e)
                 {
-                    System.out.println("e = " + e);
-                    Log.e("" + Log.ERROR, e.getMessage());
+                    System.err.println(e.getMessage() + "-----");
+                    mMovieView.showLoadingMoviesError();
                 }
             });
 
 
+    }
+
+    @Override
+    public void openMovieDetail(MovieModel model, int position)
+    {
+        checkNotNull(model);
+        mMovieView.showMovieDetailUi(model,position);
     }
 }

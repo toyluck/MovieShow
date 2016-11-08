@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ImageTextContainer">
+        <attr name="background_color" format="reference"/>
+        <attr name="subtitle" format="string"/>
+        <attr name="tagicon" format="reference"/>
+    </declare-styleable>
+</resources>

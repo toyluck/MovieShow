@@ -11,6 +11,7 @@ import com.example.hyc.movieshow.datas.sources.BaseModel;
 import com.example.hyc.movieshow.datas.sources.MoviesDataSource;
 import com.example.hyc.movieshow.datas.sources.RealmInt;
 import com.example.hyc.movieshow.utils.FileUtils;
+import com.example.hyc.movieshow.utils.GsonHelper;
 import com.example.hyc.movieshow.utils.InternetUtils;
 import com.example.hyc.movieshow.utils.StringConverterFactory;
 import com.example.hyc.movieshow.utils.UIUtil;
@@ -76,9 +77,8 @@ public class MoviesRemotoDataSource implements MoviesDataSource {
 //                .addInterceptor(new ConverIntercapter())
                 // cache
                 .addInterceptor(new CacheIntercapter()).cache(cache).build();
-        Type token = new TypeToken<RealmList<RealmInt>>() {
-        }.getType();
-        Gson gson = getTypeGson(token);
+
+        Gson gson = GsonHelper.buildForRealm();
         Retrofit retrofit = new Retrofit.Builder().baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addConverterFactory(StringConverterFactory.create())
@@ -88,39 +88,6 @@ public class MoviesRemotoDataSource implements MoviesDataSource {
         mMoviesService = retrofit.create(MoviesService.class);
     }
 
-    @NonNull
-    private Gson getTypeGson(Type token) {
-        GsonBuilder gsonBuilder = new GsonBuilder().setExclusionStrategies(new ExclusionStrategy() {
-            @Override
-            public boolean shouldSkipField(FieldAttributes f) {
-                return f.getDeclaredClass().equals(RealmObject.class);
-            }
-
-            @Override
-            public boolean shouldSkipClass(Class<?> clazz) {
-                return false;
-            }
-        }).registerTypeAdapter(token, new TypeAdapter<RealmList<RealmInt>>() {
-
-            @Override
-            public void write(JsonWriter out, RealmList<RealmInt> value) throws IOException {
-                // Ignore
-            }
-
-            @Override
-            public RealmList<RealmInt> read(JsonReader in) throws IOException {
-                RealmList<RealmInt> list = new RealmList<RealmInt>();
-                in.beginArray();
-                while (in.hasNext()) {
-                    list.add(new RealmInt(in.nextInt()));
-                }
-                in.endArray();
-                return list;
-            }
-        });
-
-        return gsonBuilder.create();
-    }
 
     private class CacheIntercapter implements Interceptor {
 

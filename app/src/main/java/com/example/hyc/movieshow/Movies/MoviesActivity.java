@@ -11,6 +11,7 @@ import com.example.hyc.movieshow.datas.sources.MoviesRepository;
 import com.example.hyc.movieshow.datas.sources.local.MoviesLocalDataSource;
 import com.example.hyc.movieshow.datas.sources.remote.MoviesRemotoDataSource;
 import com.example.hyc.movieshow.utils.FragmentUtils;
+import com.example.hyc.movieshow.utils.schedulers.SchedulerProvider;
 
 public class MoviesActivity extends AppCompatActivity
 {
@@ -41,7 +42,7 @@ public class MoviesActivity extends AppCompatActivity
         }
 
         mMoviesPresenter = new MoviesPresenter(MoviesRepository.newInstance(new MoviesRemotoDataSource(),
-            new MoviesLocalDataSource()), fragment);
+            new MoviesLocalDataSource()), fragment,new SchedulerProvider());
 
         if (savedInstanceState != null)
         {
